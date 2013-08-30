@@ -1,0 +1,17 @@
+﻿<Window x:Class="KinectMouseControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:kt="clr-namespace:Microsoft.Samples.Kinect.WpfViewers;assembly=Microsoft.Samples.Kinect.WpfViewers"
+        Loaded="MainWindow_OnLoaded" WindowStartupLocation="CenterScreen"
+        Title="MainWindow" Height="1080" Width="1920">
+    <Grid>
+        
+        <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" BorderBrush="Black" BorderThickness="1">
+            <kt:KinectSkeletonViewer 
+                x:Name="SkeletonViewer"
+                Height="480" Width="620"
+                ImageType="Color" />
+        </Border>
+       <TextBox x:Name="Out" Margin="678,45,348,72" FontSize="50" />
+    </Grid>
+</Window>
