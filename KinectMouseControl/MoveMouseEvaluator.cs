@@ -6,22 +6,22 @@ using System.Windows.Media.Media3D;
 
 namespace KinectMouseControl
 {
-    class NeutralCenterEvaluator
+    class MoveMouseEvaluator
     {
         public double NeutralAreaSize { get; private set; }
         public Vector3D NeutralAreaCenter { get; private set; }
 
-        public NeutralCenterEvaluator(Vector3D neutralAreaCenter, double neutralAreaSize)
+        public MoveMouseEvaluator(Vector3D neutralAreaCenter, double neutralAreaSize)
         {
             NeutralAreaSize = neutralAreaSize;
             NeutralAreaCenter = neutralAreaCenter;
         }
 
-        public bool IsInNeutralArea(Vector3D cursor)
+        public bool CanMoveMouse(Vector3D cursor)
         {
             Vector3D distanceVector = this.NeutralAreaCenter - cursor;
-            bool isInNeutralArea = distanceVector.Length > this.NeutralAreaSize;
-            return isInNeutralArea;
+            bool isNotInNeutralArea = distanceVector.Length > this.NeutralAreaSize;
+            return isNotInNeutralArea;
         }
     }
 }

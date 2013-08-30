@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Samples.Kinect.WpfViewers;
 
@@ -22,10 +12,15 @@ namespace KinectMouseControl
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MouseController MouseController { get; set; }
+        public bool ResetMouseControllerRequired { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
-        }
+
+            this.ResetMouseControllerRequired = true;
+        }        
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -36,6 +31,9 @@ namespace KinectMouseControl
                 throw new Exception("No kinect connected!");
             }
 
+            this.MouseController = new MouseController(5000);
+
+
             mySensor.SkeletonFrameReady += MySensorOnSkeletonFrameReady;
             mySensor.Start();
 
@@ -44,7 +42,6 @@ namespace KinectMouseControl
             Out.Text = "";
         }
 
-        private int i;
         private void MySensorOnSkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
             SkeletonHelper skeletonHelper;
@@ -66,28 +63,41 @@ namespace KinectMouseControl
                 Vector3D rightHandVector = rightHand.ToVector3D();
                 Vector3D hipCenterVector = hipCenter.ToVector3D();
 
-                NeutralCenterEvaluator neutralCenterEvaluator = new NeutralCenterEvaluator(hipCenterVector, 0.35);
-                bool mouseRests = neutralCenterEvaluator.IsInNeutralArea(rightHandVector);
+                MoveMouseEvaluator moveMouseEvaluator = new MoveMouseEvaluator(hipCenterVector, 0.35);
+                bool canMoveMouse = moveMouseEvaluator.CanMoveMouse(rightHandVector);
 
-                if (mouseRests)
+                if (canMoveMouse)
                 {
+                    if (this.ResetMouseControllerRequired)
+                    {
+                        this.MouseController.ResetInitialPositions(
+                            rightHandVector,
+                            System.Windows.Forms.Cursor.Position.ToVector());
+
+                        this.ResetMouseControllerRequired = false;
+                    }                    
+
                     this.Out.Text = "true";
 
-                    int curPosX = (int)(SystemParameters.VirtualScreenWidth * 2.5 * rightHand.Value.Position.X);
-                    int curPosY = (int)(SystemParameters.VirtualScreenHeight * 2.5 * rightHand.Value.Position.Y);
+                    Vector newMousePos = this.MouseController.GetAbsoluteMousePosition(rightHandVector);
+                    System.Windows.Forms.Cursor.Position = newMousePos.ToPoint();
 
-                    Out.Text = string.Format("X: {0}{3}Y: {1}{3}Z: {2}",
-                        rightHand.Value.Position.X.ToString("##.##"),
-                        rightHand.Value.Position.Y.ToString("##.##"),
-                        rightHand.Value.Position.Z.ToString("##.##"),
-                        Environment.NewLine);
+                    //int curPosX = (int) (SystemParameters.VirtualScreenWidth*2.5*rightHand.Value.Position.X);
+                    //int curPosY = (int) (SystemParameters.VirtualScreenHeight*2.5*rightHand.Value.Position.Y);
 
-                    Native.SetCursorPos(
-                        curPosX,
-                        curPosY);
+                    //Out.Text = string.Format("X: {0}{3}Y: {1}{3}Z: {2}",
+                    //    rightHand.Value.Position.X.ToString("##.##"),
+                    //    rightHand.Value.Position.Y.ToString("##.##"),
+                    //    rightHand.Value.Position.Z.ToString("##.##"),
+                    //    Environment.NewLine);
+
+                    //Native.SetCursorPos(
+                    //    (int)newMousePos.X,
+                    //    (int)newMousePos.Y);
                 }
                 else
                 {
+                    this.ResetMouseControllerRequired = true;
                     this.Out.Text = "false";
                 }
             }
