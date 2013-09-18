@@ -63,7 +63,7 @@ namespace KinectMouseControl
                 Vector3D rightHandVector = rightHand.ToVector3D();
                 Vector3D hipCenterVector = hipCenter.ToVector3D();
 
-                MoveMouseEvaluator moveMouseEvaluator = new MoveMouseEvaluator(hipCenterVector, 0.35);
+                MoveMouseEvaluator moveMouseEvaluator = new MoveMouseEvaluator(hipCenterVector, 0.40);
                 bool canMoveMouse = moveMouseEvaluator.CanMoveMouse(rightHandVector);
 
                 if (canMoveMouse)
@@ -81,19 +81,6 @@ namespace KinectMouseControl
 
                     Vector newMousePos = this.MouseController.GetAbsoluteMousePosition(rightHandVector);
                     System.Windows.Forms.Cursor.Position = newMousePos.ToPoint();
-
-                    //int curPosX = (int) (SystemParameters.VirtualScreenWidth*2.5*rightHand.Value.Position.X);
-                    //int curPosY = (int) (SystemParameters.VirtualScreenHeight*2.5*rightHand.Value.Position.Y);
-
-                    //Out.Text = string.Format("X: {0}{3}Y: {1}{3}Z: {2}",
-                    //    rightHand.Value.Position.X.ToString("##.##"),
-                    //    rightHand.Value.Position.Y.ToString("##.##"),
-                    //    rightHand.Value.Position.Z.ToString("##.##"),
-                    //    Environment.NewLine);
-
-                    //Native.SetCursorPos(
-                    //    (int)newMousePos.X,
-                    //    (int)newMousePos.Y);
                 }
                 else
                 {

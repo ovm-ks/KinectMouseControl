@@ -19,8 +19,8 @@ namespace KinectMouseControl
 
         public bool CanMoveMouse(Vector3D cursor)
         {
-            Vector3D distanceVector = this.NeutralAreaCenter - cursor;
-            bool isNotInNeutralArea = distanceVector.Length > this.NeutralAreaSize;
+            double distance = this.NeutralAreaCenter.Z - cursor.Z;
+            bool isNotInNeutralArea = distance > this.NeutralAreaSize;
             return isNotInNeutralArea;
         }
     }
