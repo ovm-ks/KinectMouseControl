@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Media3D;
+using WindowsInput;
 using Microsoft.Kinect;
 using Microsoft.Samples.Kinect.WpfViewers;
 
@@ -31,7 +33,7 @@ namespace KinectMouseControl
                 throw new Exception("No kinect connected!");
             }
 
-            this.MouseController = new MouseController(5000);
+            this.MouseController = new MouseController(2000);
 
 
             mySensor.SkeletonFrameReady += MySensorOnSkeletonFrameReady;
@@ -54,17 +56,24 @@ namespace KinectMouseControl
                 return;
             }
 
+            Joint? leftHand = skeletonHelper.GetTrackedJoint(JointType.HandLeft);
             Joint? rightHand = skeletonHelper.GetTrackedJoint(JointType.HandRight);
             Joint? hipCenter = skeletonHelper.GetTrackedJoint(JointType.HipCenter);            
 
+            string debugOut = "";
+
             if (rightHand != null &&
-                hipCenter != null)
+                hipCenter != null &&
+                leftHand != null)
             {
                 Vector3D rightHandVector = rightHand.ToVector3D();
                 Vector3D hipCenterVector = hipCenter.ToVector3D();
+                Vector3D leftHandVector = leftHand.ToVector3D();
 
-                MoveMouseEvaluator moveMouseEvaluator = new MoveMouseEvaluator(hipCenterVector, 0.40);
+                MoveMouseEvaluator moveMouseEvaluator = new MoveMouseEvaluator(hipCenterVector, 0.25);
                 bool canMoveMouse = moveMouseEvaluator.CanMoveMouse(rightHandVector);
+
+                debugOut += "Move Mouse: "; 
 
                 if (canMoveMouse)
                 {
@@ -75,9 +84,9 @@ namespace KinectMouseControl
                             System.Windows.Forms.Cursor.Position.ToVector());
 
                         this.ResetMouseControllerRequired = false;
-                    }                    
+                    }
 
-                    this.Out.Text = "true";
+                    debugOut += "true";
 
                     Vector newMousePos = this.MouseController.GetAbsoluteMousePosition(rightHandVector);
                     System.Windows.Forms.Cursor.Position = newMousePos.ToPoint();
@@ -85,8 +94,28 @@ namespace KinectMouseControl
                 else
                 {
                     this.ResetMouseControllerRequired = true;
-                    this.Out.Text = "false";
+                    debugOut += "false";
                 }
+
+                debugOut += Environment.NewLine;
+
+                MouseClickEvaluator clickEvaluator = new MouseClickEvaluator(hipCenterVector, 0.20);
+                bool isLeftButtonDown = clickEvaluator.IsLeftButtonPressed(leftHandVector);
+
+                debugOut += "LButton: ";
+
+                if (isLeftButtonDown)
+                {
+                    MouseClicker.SetMouseLeftButtonDown();
+                    debugOut += "true";
+                }
+                else
+                {
+                    MouseClicker.SetMouseLeftButtonUp();
+                    debugOut += "false";
+                }
+
+                this.Out.Text = debugOut;
             }
         }
 

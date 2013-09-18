@@ -62,6 +62,8 @@
     <Compile Include="Exceptions\SkeletonFrameDataNotAvailableException.cs" />
     <Compile Include="FormPointExtensions.cs" />
     <Compile Include="JointExtensions.cs" />
+    <Compile Include="MouseClicker.cs" />
+    <Compile Include="MouseClickEvaluator.cs" />
     <Compile Include="MouseController.cs" />
     <Compile Include="MoveMouseEvaluator.cs" />
     <Compile Include="SkeletonHelper.cs" />
