@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Media3D;
-using WindowsInput;
 using Microsoft.Kinect;
 using Microsoft.Samples.Kinect.WpfViewers;
 
